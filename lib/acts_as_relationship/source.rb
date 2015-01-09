@@ -16,6 +16,8 @@ module ActsAsRelationship
 
           self.class_eval <<-RUBY
             def #{action}(target)
+              return if #{action.progressize}?(target) || (self == target)
+
               #{action.pluralize}.create(target_#{target}_id: target.id)
             end
 

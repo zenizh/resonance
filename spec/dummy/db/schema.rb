@@ -20,6 +20,8 @@ ActiveRecord::Schema.define(version: 20150107234632) do
     t.datetime "updated_at",     null: false
   end
 
+  add_index "follows", ["user_id", "target_user_id"], name: "index_follows_on_user_id_and_target_user_id", unique: true
+
   create_table "users", force: :cascade do |t|
     t.string   "name"
     t.datetime "created_at", null: false
