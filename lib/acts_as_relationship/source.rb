@@ -9,6 +9,8 @@ module ActsAsRelationship
         with = *with.map(&:to_s)
 
         with.each do |action|
+          action.extend ActsAsRelationship::Verb
+
           has_many :"#{action.pluralize}",           dependent: :destroy
           has_many :"#{action.pluralize}_as_target", dependent: :destroy, class_name: action.capitalize, foreign_key: :"target_#{target}_id"
 
@@ -18,24 +20,24 @@ module ActsAsRelationship
             end
 
             def un#{action}(target)
-              return unless #{action}ing?(target)
+              return unless #{action.progressize}?(target)
 
               #{action.pluralize}.find_by(target_#{target}_id: target.id).destroy
             end
 
-            def #{action}ing?(target)
+            def #{action.progressize}?(target)
               #{action.pluralize}.exists?(target_#{target}_id: target.id)
             end
 
-            def #{action}ed_by?(target)
+            def #{action.pastize}_by?(target)
               target.#{action.pluralize}.exists?(#{target}_id: target.id)
             end
 
-            def #{action}ing
+            def #{action.progressize}
               #{action.pluralize}
             end
 
-            def #{action}ers
+            def #{action.peoplize}
               #{action.pluralize}_as_target
             end
           RUBY

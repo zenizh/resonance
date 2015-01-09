@@ -1,3 +1,3 @@
 class User < ActiveRecord::Base
-  acts_as_relation_source target: :user, with: [:follow]
+  acts_as_relation_source target: :user, with: [:follow, :block, :mute]
 end
