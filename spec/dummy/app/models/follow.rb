@@ -1,5 +1,3 @@
 class Follow < ActiveRecord::Base
-  include ActsAsRelationship
-
-  acts_as_relation_target :user
+  acts_as_relation_target source: :user
 end
