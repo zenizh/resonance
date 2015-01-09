@@ -18,9 +18,8 @@ module ActsAsRelationship
 
     # TODO: Implement this method more logically
     def peoplize
-      chop! if last == 'e'
-
-      self + 'ers'
+      action = (last == 'e') ? chop : self
+      action << 'ers'
     end
   end
 end
