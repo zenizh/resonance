@@ -1,3 +1,5 @@
 class User < ActiveRecord::Base
-  acts_as_relation_source target: :user, with: [:follow, :block, :mute]
+  # acts_in_relation with: [:follow, :block, :mute]
+
+  acts_in_relation :source, target: :post, with: [:like]
 end
