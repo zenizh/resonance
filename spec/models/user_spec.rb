@@ -100,7 +100,7 @@ describe User, type: :model do
     before { user.follow other_user }
 
     it 'should be following' do
-      expect(user.following).to be_exists(target_user_id: other_user.id)
+      expect(user.following).to be_exists(other_user.id)
     end
   end
 
@@ -108,7 +108,7 @@ describe User, type: :model do
     before { other_user.follow user }
 
     it 'should be followed by other_user' do
-      expect(user.followers).to be_exists(user_id: other_user.id)
+      expect(user.followers).to be_exists(other_user.id)
     end
   end
 end
