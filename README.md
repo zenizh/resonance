@@ -1,4 +1,4 @@
-# acts_as_relationship
+# acts_in_relation
 
 In development.
 

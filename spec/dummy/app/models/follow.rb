@@ -1,3 +1,3 @@
 class Follow < ActiveRecord::Base
-  acts_as_relation_target source: :user
+  acts_in_relation :action, source: :user, target: :user
 end
