@@ -1,14 +1,10 @@
 module ActsInRelation
   module Target
-    def self.included(base)
-      base.extend ClassMethods
-    end
+    def define
+      with.each do |action|
+        action.extend ActsInRelation::Supports::Verb
 
-    module ClassMethods
-      def define
-        with.each do |action|
-          action.extend ActsInRelation::Supports::Verb
-
+        class_object.class_eval <<-RUBY
           has_many :"#{action.pluralize}_as_target",
             foreign_key: :"target_#{target}_id",
             class_name: action.capitalize,
@@ -18,12 +14,10 @@ module ActsInRelation
             through: :"#{action.pluralize}_as_target",
             source: :"#{source}"
 
-          self.class_eval <<-RUBY
-            def #{action.pastize}_by?(source)
-              source.#{action.pluralize}.exists?(#{source}_id: source.id)
-            end
-          RUBY
-        end
+          def #{action.pastize}_by?(source)
+            source.#{action.pluralize}.exists?(#{source}_id: source.id)
+          end
+        RUBY
       end
     end
   end
