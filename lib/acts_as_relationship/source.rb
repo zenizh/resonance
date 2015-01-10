@@ -11,8 +11,11 @@ module ActsAsRelationship
         with.each do |action|
           action.extend ActsAsRelationship::Verb
 
-          has_many :"#{action.pluralize}",           dependent: :destroy
-          has_many :"#{action.pluralize}_as_target", dependent: :destroy, class_name: action.capitalize, foreign_key: :"target_#{target}_id"
+          has_many :"#{action.pluralize}",           dependent: :destroy, foreign_key: :"#{target}_id"
+          has_many :"#{action.pluralize}_as_target", dependent: :destroy, foreign_key: :"target_#{target}_id", class_name: action.capitalize
+
+          has_many :"#{action.progressize}", through: :"#{action.pluralize}",           source: :"target_#{target}"
+          has_many :"#{action.peoplize}",    through: :"#{action.pluralize}_as_target", source: :"#{target}"
 
           self.class_eval <<-RUBY
             def #{action}(target)
@@ -33,14 +36,6 @@ module ActsAsRelationship
 
             def #{action.pastize}_by?(target)
               target.#{action.pluralize}.exists?(#{target}_id: target.id)
-            end
-
-            def #{action.progressize}
-              #{action.pluralize}
-            end
-
-            def #{action.peoplize}
-              #{action.pluralize}_as_target
             end
           RUBY
         end
