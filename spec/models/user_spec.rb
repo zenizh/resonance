@@ -55,7 +55,7 @@ describe User, type: :model do
         user.follow other_user
       end
 
-      it 'should be follow only once' do
+      it 'should follow only once' do
         expect(user.follows.count).to eq(1)
       end
     end
@@ -91,7 +91,7 @@ describe User, type: :model do
   describe '#following?' do
     before { user.follow other_user }
 
-    it 'should be following' do
+    it 'should be followed' do
       expect(user).to be_following(other_user)
     end
   end
@@ -99,7 +99,7 @@ describe User, type: :model do
   describe '#following' do
     before { user.follow other_user }
 
-    it 'should be following' do
+    it 'should include other user' do
       expect(user.following).to be_exists(other_user.id)
     end
   end
@@ -115,7 +115,7 @@ describe User, type: :model do
   describe '#followers' do
     before { other_user.follow user }
 
-    it 'should include other_user' do
+    it 'should include other user' do
       expect(user.followers).to be_exists(other_user.id)
     end
   end
