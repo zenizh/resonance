@@ -1,5 +1,8 @@
 # acts_in_relation
 
+[![Build Status](https://travis-ci.org/kami30k/acts_in_relation.svg)](https://travis-ci.org/kami30k/acts_in_relation)
+[![Gem Version](https://badge.fury.io/rb/acts_in_relation.svg)](http://badge.fury.io/rb/acts_in_relation)
+
 acts_in_relation is a Rails plugin that adds a relational feature to Model, such as `follow`, `block`, `mute`, or `like` and so on.
 
 ## Installation
