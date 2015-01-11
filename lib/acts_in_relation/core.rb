@@ -26,7 +26,7 @@ module ActsInRelation
       end
 
       def define
-        positions = @position == :self ? [:source, :target] : [@position]
+        positions = (@position == :self) ? [:source, :target] : [@position]
         positions.each do |position|
           extend "ActsInRelation::#{position.capitalize}".constantize
           define
