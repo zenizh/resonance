@@ -9,9 +9,9 @@ Gem::Specification.new do |s|
   s.version     = ActsInRelation::VERSION
   s.authors     = ["kami"]
   s.email       = ["kami30k@gmail.com"]
-  s.homepage    = "TODO"
-  s.summary     = "TODO: Summary of ActsInRelation."
-  s.description = "TODO: Description of ActsInRelation."
+  s.homepage    = "https://github.com/kami30k/acts_in_relation"
+  s.summary     = "Rails plugin that adds a relational feature to Model, such as follow, block, mute, or like and so on."
+  s.description = "Rails plugin that adds a relational feature to Model, such as follow, block, mute, or like and so on."
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
