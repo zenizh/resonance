@@ -1,3 +1,5 @@
+require 'caller_class'
+
 module ActsInRelation
   module Core
     def self.included(base)
@@ -5,16 +7,11 @@ module ActsInRelation
     end
 
     module ClassMethods
+      include CallerClass
+
       def acts_in_relation(position = :self, params)
-        relation = Relation.new(position, params, class_name.call)
+        relation = Relation.new(position, params, caller_class.downcase)
         relation.define
-      end
-
-      private
-
-      # TODO: Implement this method to return reliable class name
-      def class_name
-        -> { caller_locations(3, 1)[0].label.match(/^\<class:(\w+)\>$/)[1].downcase.to_sym }
       end
     end
 
