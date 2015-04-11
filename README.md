@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/kami30k/acts_in_relation.svg)](https://travis-ci.org/kami30k/acts_in_relation)
 [![Gem Version](https://badge.fury.io/rb/acts_in_relation.svg)](http://badge.fury.io/rb/acts_in_relation)
 
-acts_in_relation is a Rails plugin that adds a relational feature to Model, such as `follow`, `block`, `mute`, or `like` and so on.
+acts_in_relation adds relational feature to Rails application, such as follow, block, like and so on.
 
 ## Installation
 
@@ -21,74 +21,64 @@ $ bundle
 
 ## Usage
 
-acts_in_relation supports two way to add the feature.
+acts_in_relation supports two way to add relational feature.
 
-First, for example, it implements `follow` function between users (User model).
-The second, it implements `like` function to user's post (User and Post model).
+1. Add feature to oneself
+2. Add feature to between two models
 
-This is an example of User model, but you can be applied to any model.
+Following example shows about User model, however, you can apply to any models.
 
-### 1. User model
+### 1. Add follow feature to User
 
-In this case, add `follow` feature to User model.
+This case adds follow feature to User model.
 
-At first, generate User and Follow model.
+At first, generate User and Follow model:
 
 ```
-$ rails g model User name:string
-$ rails g model Follow user_id:integer target_user_id:integer
+$ bin/rails g model User
+$ bin/rails g model Follow user_id:integer target_user_id:integer
 ```
 
-Add unique index to Follow table.
+Then migrate:
 
-```ruby
-class CreateFollows < ActiveRecord::Migration
-  def change
-    create_table :follows do |t|
-      t.integer :user_id
-      t.integer :target_user_id
-      t.timestamps
-    end
-
-    add_index :follows, [:user_id, :target_user_id], unique: true
-  end
-end
+```
+$ bin/rake db:migrate
 ```
 
-The last, add `acts_in_relation` method to User and Follow model.
+At last, add `acts_in_relation` method to each models:
 
 ```ruby
 class User < ActiveRecord::Base
-  acts_in_relation with: :follow
+  acts_in_relation role: :self, action: :follow
 end
 
 class Follow < ActiveRecord::Base
-  acts_in_relation :action, source: :user, target: :user
+  acts_in_relation role: :action, self: :user
 end
 ```
 
 That's it.
 User instance has been added following methods:
 
-- `user.follow(other_user)`
-- `user.unfollow(other_user)`
-- `user.following?(other_user)`
-- `user.following`
-- `other_user.followed_by?(user)`
-- `other_user.followers`
+- user.follow(other_user)
+- user.unfollow(other_user)
+- user.following?(other_user)
+- user.following
+- other_user.followed_by?(user)
+- other_user.followers
 
-Examples:
+Example:
 
 ```ruby
-user       = User.create(name: 'foo')
-other_user = User.create(name: 'bar')
+user       = User.create
+other_user = User.create
 
 # Follow
 user.follow other_user
 user.following?(other_user)   #=> true
-user.following                #=> <ActiveRecord::Associations::CollectionProxy [#<User id: 2, name: "bar", created_at: "2015-01-10 01:57:52", updated_at: "2015-01-10 01:57:52">]>
+user.following                #=> <ActiveRecord::Associations::CollectionProxy [#<User id: 2, created_at: "2015-01-10 01:57:52", updated_at: "2015-01-10 01:57:52">]>
 other_user.followed_by?(user) #=> true
-other_user.followers          #=> <ActiveRecord::Associations::CollectionProxy [#<User id: 1, name: "foo", created_at: "2015-01-10 01:57:42", updated_at: "2015-01-10 01:57:42">]>
+other_user.followers          #=> <ActiveRecord::Associations::CollectionProxy [#<User id: 1, created_at: "2015-01-10 01:57:42", updated_at: "2015-01-10 01:57:42">]>
 
 # Unfollow
 user.unfollow other_user
@@ -98,55 +88,59 @@ other_user.followed_by?(user) #=> false
 other_user.followers          #=> <ActiveRecord::Associations::CollectionProxy []>
 ```
 
-In the same way, it can also implement `block` or `mute` function.
+At the same time, `:action` is able to be passed some actions:
 
 ```ruby
 class User < ActiveRecord::Base
-  acts_in_relation target: :user, with: [:follow, :block, :mute]
+  acts_in_relation role: :self, action: [:follow, :block, :mute]
 end
 ```
 
-### 2. User and Post model
+### 2. Add like feature to User and Post
 
-acts_in_relation is possible even between different models, such as User and Post model.
-(This implementation can implement at the same time as User's `follow` function)
+This case adds like feature to User and Post model.
 
 ```ruby
 class User < ActiveRecord::Base
-  acts_in_relation with: :follow
-
-  acts_in_relation :source, target: :post, with: :like
+  acts_in_relation role: :source, target: :post, action: :like
 end
 
 class Post < ActiveRecord::Base
-  acts_in_relation :target, source: :user, with: :like
+  acts_in_relation role: :target, source: :user, action: :like
 end
 
 class Like < ActiveRecord::Base
-  acts_in_relation :action, source: :user, target: :post
+  acts_in_relation role: :action, source: :user, target: :post
 end
 ```
 
 User and Post instance has been added following methods:
 
-- `user.like(post)`
-- `user.unlike(post)`
-- `user.liking?(post)`
-- `user.liking`
-- `post.liked_by?(user)`
-- `post.likers`
+- user.like(post)
+- user.unlike(post)
+- user.liking?(post)
+- user.liking
+- post.liked_by?(user)
+- post.likers
 
-## Three roles
+At the same time, some `acts_in_relation` methods are able to be defined:
 
-acts_in_relation has three roles, Source, Target and Action.
+```ruby
+class User < ActiveRecord::Base
+  acts_in_relation role: :self, action: :follow
+  acts_in_relation role: :source, target: :post, action: :like
+end
+```
 
-Following table is these role's outline.
+## Roles
+
+acts_in_relation has three roles: source, target and action.
 
 | Role | Outline | (1) | (2) |
 | --- | --- | --- | --- |
-| Source | The model that performs the action. | User | User |
-| Target | The model that receives the action. | User | Post |
-| Action | The action takes place between two models. | Follow | Like |
+| source | The model that performs the action. | User | User |
+| target | The model that receives the action. | User | Post |
+| action | The action performs between two models. | Follow | Like |
 
 ## Contributing
 
