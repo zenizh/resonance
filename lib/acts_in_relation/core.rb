@@ -1,54 +1,73 @@
-require 'caller_class'
-
 module ActsInRelation
   module Core
-    def self.included(base)
-      base.extend ClassMethods
+    class << self
+      def included(base)
+        base.extend ClassMethods
+      end
     end
 
     module ClassMethods
-      include CallerClass
+      # DSL called to a subclass of ActiveRecord::Base
+      #
+      # @param [Hash] args Define relation with :role, :action, :source, :target or :self.
+      #
+      # @example Define self relation
+      #   class User < ActiveRecord::Base
+      #     acts_in_relation role: :self, action: [:follow, :block]
+      #   end
+      #
+      #   class Follow < ActiveRecord::Base
+      #     acts_in_relation role: :action, self: :user
+      #   end
+      #
+      #   class Block < ActiveRecord::Base
+      #     acts_in_relation role: :action, self: :user
+      #   end
+      #
+      # @example Define relation of each models
+      #   class User < ActiveRecord::Base
+      #     acts_in_relation role: :source, target: :post, action: :like
+      #   end
+      #
+      #   class Post < ActiveRecord::Base
+      #     acts_in_relation role: :target, source: :user, action: :like
+      #   end
+      #
+      #   class Like < ActiveRecord::Base
+      #     acts_in_relation role: :action, source: :user, target: :post
+      #   end
+      def acts_in_relation(**args)
+        @args = args
 
-      def acts_in_relation(position = :self, params)
-        relation = Relation.new(position, params, caller_class.downcase)
-        relation.define
-      end
-    end
-
-    class Relation
-      def initialize(position, params, class_name)
-        @position   = position
-        @params     = params
-        @class_name = class_name
-      end
-
-      def define
-        positions = (@position == :self) ? [:source, :target] : [@position]
-        positions.each do |position|
-          extend "ActsInRelation::#{position.capitalize}".constantize
-          define
+        case @args[:role]
+        when nil
+          raise ActsInRelation::MissingRoleError
+        when :source
+          define_source
+        when :target
+          define_target
+        when :action
+          define_action
+        when :self
+          define_source
+          define_target
+        else
+          raise ActsInRelation::UnknownRoleError, @args[:role]
         end
       end
 
       private
 
-      def source
-        @source ||= @params[:source] || @class_name
+      def define_source
+        ActsInRelation::Roles::Source.new(@args).define
       end
 
-      def target
-        @target ||= @params[:target] || @class_name
+      def define_target
+        ActsInRelation::Roles::Target.new(@args).define
       end
 
-      # TODO: Return instance if exists
-      def with
-        with = @params[:with]
-        with = with.kind_of?(Array) ? with : [with]
-        with.map(&:to_s)
-      end
-
-      def class_object
-        @class_object ||= @class_name.to_s.capitalize.constantize
+      def define_action
+        ActsInRelation::Roles::Action.new(@args).define
       end
     end
   end
