@@ -1,12 +1,12 @@
-require 'rails_helper'
+require 'spec_helper'
 
 describe Post, type: :model do
-  let(:user) { User.create(name: 'hoge') }
-  let(:post) { Post.create() }
+  let(:user) { User.create }
+  let(:post) { Post.create }
 
   describe 'instance methods' do
     it 'should be defined' do
-      # source: :user, with: :like
+      # source: :user, action: :like
       expect(post).not_to respond_to(:like)
       expect(post).not_to respond_to(:unlike)
       expect(post).not_to respond_to(:liking?)
@@ -27,7 +27,7 @@ describe Post, type: :model do
   describe '#likers' do
     before { user.like post }
 
-    it 'should include user' do
+    it 'should be included user' do
       expect(post.likers).to be_exists(id: user.id)
     end
   end
