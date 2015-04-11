@@ -1,12 +1,12 @@
-require 'rails_helper'
+require 'spec_helper'
 
 describe User, type: :model do
-  let(:user)       { User.create(name: 'hoge') }
-  let(:other_user) { User.create(name: 'fuga') }
+  let(:user)       { User.create }
+  let(:other_user) { User.create }
 
   describe 'instance methods' do
     it 'should be defined' do
-      # with: :follow
+      # action: :follow
       expect(user).to respond_to(:follow)
       expect(user).to respond_to(:unfollow)
       expect(user).to respond_to(:following?)
@@ -14,7 +14,7 @@ describe User, type: :model do
       expect(user).to respond_to(:followed_by?)
       expect(user).to respond_to(:followers)
 
-      # with: :block
+      # action: :block
       expect(user).to respond_to(:block)
       expect(user).to respond_to(:unblock)
       expect(user).to respond_to(:blocking?)
@@ -22,7 +22,7 @@ describe User, type: :model do
       expect(user).to respond_to(:blocked_by?)
       expect(user).to respond_to(:blockers)
 
-      # with: :mute
+      # action: :mute
       expect(user).to respond_to(:mute)
       expect(user).to respond_to(:unmute)
       expect(user).to respond_to(:muting?)
@@ -30,7 +30,7 @@ describe User, type: :model do
       expect(user).to respond_to(:muted_by?)
       expect(user).to respond_to(:muters)
 
-      # target: :post, with: :like
+      # target: :post, action: :like
       expect(user).to respond_to(:like)
       expect(user).to respond_to(:unlike)
       expect(user).to respond_to(:liking?)
@@ -55,7 +55,7 @@ describe User, type: :model do
         user.follow other_user
       end
 
-      it 'should follow only once' do
+      it 'should be followed only once' do
         expect(user.follows.count).to eq(1)
       end
     end
@@ -83,7 +83,7 @@ describe User, type: :model do
 
     context 'unfollow user' do
       it 'should not raise error' do
-        expect { user.unfollow other_user } .not_to raise_error
+        expect { user.unfollow other_user }.not_to raise_error
       end
     end
   end
@@ -99,7 +99,7 @@ describe User, type: :model do
   describe '#following' do
     before { user.follow other_user }
 
-    it 'should include other user' do
+    it 'should be included other user' do
       expect(user.following).to be_exists(other_user.id)
     end
   end
@@ -115,7 +115,7 @@ describe User, type: :model do
   describe '#followers' do
     before { other_user.follow user }
 
-    it 'should include other user' do
+    it 'should be included other user' do
       expect(user.followers).to be_exists(other_user.id)
     end
   end
