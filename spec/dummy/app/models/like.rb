@@ -1,3 +1,3 @@
 class Like < ActiveRecord::Base
-  acts_in_relation :action, source: :user, target: :post
+  acts_in_relation role: :action, source: :user, target: :post
 end

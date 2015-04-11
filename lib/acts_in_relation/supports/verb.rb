@@ -7,20 +7,19 @@ module ActsInRelation
         'follow' => 'following'
       }
 
-      def pastize
-        verb.conjugate(tense: :past).split(' ').last
+      def pastize(object)
+        object.verb.conjugate(tense: :past).split(' ').last
       end
 
-      def progressize
-        return PATCHES[self] if PATCHES.has_key?(self)
+      def progressize(object)
+        return PATCHES[object] if PATCHES.has_key?(object)
 
-        verb.conjugate(aspect: :progressive).split(' ').last
+        object.verb.conjugate(aspect: :progressive).split(' ').last
       end
 
-      # TODO: Implement this method more logically
-      def peoplize
-        action = (last == 'e') ? chop : self
-        action + 'ers'
+      # @todo Implement more logically
+      def peoplize(object)
+        (object.last == 'e' ? object.chop : object) + 'ers'
       end
     end
   end
