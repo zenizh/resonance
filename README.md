@@ -142,6 +142,20 @@ acts_in_relation has three roles: source, target and action.
 | target | The model that receives the action. | User | Post |
 | action | The action performs between two models. | Follow | Like |
 
+## Generate migration
+
+You can generate migration by generator:
+
+```
+$ rails generate acts_in_relation:action [action] --source=[source] --target=[target]
+```
+
+For example:
+
+```
+$ rails generate acts_in_relation:action like --source=user --target=post
+```
+
 ## Contributing
 
 1. Fork it ( https://github.com/kami30k/acts_in_relation/fork )
