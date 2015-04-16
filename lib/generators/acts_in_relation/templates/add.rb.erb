@@ -1,0 +1,6 @@
+class AddColumnsTo<%= table_name.capitalize %> < ActiveRecord::Migration
+  def change
+    add_column :<%= table_name %>, :<%= options[:source] %>_id, :integer
+    add_column :<%= table_name %>, :target_<%= options[:target] %>_id, :integer
+  end
+end
