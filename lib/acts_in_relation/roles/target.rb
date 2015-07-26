@@ -14,7 +14,7 @@ module ActsInRelation
               source: :"#{source}"
 
             def #{pastize(action)}_by?(source)
-              source.#{action.pluralize}.exists?(#{source}_id: source.id)
+              source.#{action.pluralize}.exists?(target_#{target}_id: id) 
             end
           RUBY
         end
