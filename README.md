@@ -1,6 +1,6 @@
 # acts_in_relation
 
-[![Build Status](https://travis-ci.org/kami30k/acts_in_relation.svg)](https://travis-ci.org/kami30k/acts_in_relation)
+[![Build Status](https://travis-ci.org/kami-zh/acts_in_relation.svg)](https://travis-ci.org/kami-zh/acts_in_relation)
 [![Gem Version](https://badge.fury.io/rb/acts_in_relation.svg)](http://badge.fury.io/rb/acts_in_relation)
 
 acts_in_relation adds relational feature to Rails application, such as follow, block, like and so on.
@@ -158,7 +158,7 @@ $ rails generate acts_in_relation:action like --source=user --target=post
 
 ## Contributing
 
-1. Fork it ( https://github.com/kami30k/acts_in_relation/fork )
+1. Fork it ( https://github.com/kami-zh/acts_in_relation/fork )
 2. Create your feature branch (git checkout -b my-new-feature)
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)
