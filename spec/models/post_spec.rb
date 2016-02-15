@@ -6,7 +6,7 @@ describe Post, type: :model do
 
   describe 'instance methods' do
     it 'should be defined' do
-      # source: :user, action: :like
+      # :user resonates with :post by :like
       expect(post).not_to respond_to(:like)
       expect(post).not_to respond_to(:unlike)
       expect(post).not_to respond_to(:liking?)

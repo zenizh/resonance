@@ -1,12 +1,12 @@
 require 'spec_helper'
 
 describe User, type: :model do
-  let(:user)       { User.create }
+  let(:user) { User.create }
   let(:other_user) { User.create }
 
   describe 'instance methods' do
     it 'should be defined' do
-      # action: :follow
+      # :user resonates with :user by :follow
       expect(user).to respond_to(:follow)
       expect(user).to respond_to(:unfollow)
       expect(user).to respond_to(:following?)
@@ -14,23 +14,7 @@ describe User, type: :model do
       expect(user).to respond_to(:followed_by?)
       expect(user).to respond_to(:followers)
 
-      # action: :block
-      expect(user).to respond_to(:block)
-      expect(user).to respond_to(:unblock)
-      expect(user).to respond_to(:blocking?)
-      expect(user).to respond_to(:blocking)
-      expect(user).to respond_to(:blocked_by?)
-      expect(user).to respond_to(:blockers)
-
-      # action: :mute
-      expect(user).to respond_to(:mute)
-      expect(user).to respond_to(:unmute)
-      expect(user).to respond_to(:muting?)
-      expect(user).to respond_to(:muting)
-      expect(user).to respond_to(:muted_by?)
-      expect(user).to respond_to(:muters)
-
-      # target: :post, action: :like
+      # :user resonates with :post by :like
       expect(user).to respond_to(:like)
       expect(user).to respond_to(:unlike)
       expect(user).to respond_to(:liking?)
@@ -72,7 +56,7 @@ describe User, type: :model do
   describe '#unfollow' do
     context 'following user' do
       before do
-        user.follow   other_user
+        user.follow other_user
         user.unfollow other_user
       end
 

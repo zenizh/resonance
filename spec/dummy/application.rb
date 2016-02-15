@@ -2,8 +2,7 @@ $:.unshift File.expand_path('../../../lib', __FILE__)
 
 require 'action_controller/railtie'
 require 'active_record'
-
-require 'acts_in_relation'
+require 'resonate'
 
 module Dummy
   class Application < Rails::Application
@@ -22,22 +21,32 @@ ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database: ':memory:'
 # Models
 #
 
-class User < ActiveRecord::Base
-  acts_in_relation role: :self, action: [:follow, :block, :mute]
+class User   < ActiveRecord::Base; end
+class Post   < ActiveRecord::Base; end
+class Follow < ActiveRecord::Base; end
+class Like   < ActiveRecord::Base; end
 
-  acts_in_relation role: :source, target: :post, action: :like
+module Resonatable
+  include Resonate
+
+  resonate :user, with: :user, by: :follow
+  resonate :user, with: :post, by: :like, foreign_key: :post_id
 end
 
-class Post < ActiveRecord::Base
-  acts_in_relation role: :target, source: :user, action: :like
+class User
+  include Resonatable
 end
 
-class Follow < ActiveRecord::Base
-  acts_in_relation role: :action, self: :user
+class Post
+  include Resonatable
 end
 
-class Like < ActiveRecord::Base
-  acts_in_relation role: :action, source: :user, target: :post
+class Follow
+  include Resonatable
+end
+
+class Like
+  include Resonatable
 end
 
 #
@@ -75,7 +84,7 @@ class CreateLikes < ActiveRecord::Migration
   def change
     create_table :likes do |t|
       t.integer :user_id
-      t.integer :target_post_id
+      t.integer :post_id
 
       t.timestamps null: false
     end

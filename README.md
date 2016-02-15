@@ -1,16 +1,16 @@
-# acts_in_relation
+# Resonate
 
-[![Build Status](https://travis-ci.org/kami-zh/acts_in_relation.svg)](https://travis-ci.org/kami-zh/acts_in_relation)
-[![Gem Version](https://badge.fury.io/rb/acts_in_relation.svg)](http://badge.fury.io/rb/acts_in_relation)
+[![Build Status](https://travis-ci.org/kami-zh/resonate.svg)](https://travis-ci.org/kami-zh/resonate)
+[![Gem Version](https://badge.fury.io/rb/resonate.svg)](http://badge.fury.io/rb/resonate)
 
-acts_in_relation adds relational feature to Rails application, such as follow, block, like and so on.
+Resonate provides a relational feature to your Rails application, such as follow, like, and so on.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'acts_in_relation'
+gem 'resonate'
 ```
 
 And then execute:
@@ -21,10 +21,10 @@ $ bundle
 
 ## Usage
 
-acts_in_relation supports two way to add relational feature.
+Resonate supports two way to add relational feature.
 
-1. Add feature to oneself
-2. Add feature to between two models
+1. Add a feature to itself
+2. Add features to two models
 
 Following example shows about User model, however, you can apply to any models.
 
@@ -39,21 +39,31 @@ $ bin/rails g model User
 $ bin/rails g model Follow user_id:integer target_user_id:integer
 ```
 
-Then migrate:
+And migrate:
 
 ```
 $ bin/rake db:migrate
 ```
 
-At last, add `acts_in_relation` method to each models:
+Then, define `Resonatable` module to `app/models/concerns/resonatable.rb`:
+
+```ruby
+module Resonatable
+  include Resonate
+
+  resonate :user, with: :user, by: :follow
+end
+```
+
+At last, include this module from each models:
 
 ```ruby
 class User < ActiveRecord::Base
-  acts_in_relation role: :self, action: :follow
+  include Resonatable
 end
 
 class Follow < ActiveRecord::Base
-  acts_in_relation role: :action, self: :user
+  include Resonatable
 end
 ```
 
@@ -88,29 +98,27 @@ other_user.followed_by?(user) #=> false
 other_user.followers          #=> <ActiveRecord::Associations::CollectionProxy []>
 ```
 
-At the same time, `:action` is able to be passed some actions:
-
-```ruby
-class User < ActiveRecord::Base
-  acts_in_relation role: :self, action: [:follow, :block, :mute]
-end
-```
-
 ### 2. Add like feature to User and Post
 
 This case adds like feature to User and Post model.
 
 ```ruby
+module Resonatable
+  include Resonate
+
+  resonate :user, with: :post, by: :like
+end
+
 class User < ActiveRecord::Base
-  acts_in_relation role: :source, target: :post, action: :like
+  include Resonatable
 end
 
 class Post < ActiveRecord::Base
-  acts_in_relation role: :target, source: :user, action: :like
+  include Resonatable
 end
 
 class Like < ActiveRecord::Base
-  acts_in_relation role: :action, source: :user, target: :post
+  include Resonatable
 end
 ```
 
@@ -123,42 +131,28 @@ User and Post instance has been added following methods:
 - post.liked_by?(user)
 - post.likers
 
-At the same time, some `acts_in_relation` methods are able to be defined:
+At the same time, some `resonate` methods are able to be defined:
 
 ```ruby
-class User < ActiveRecord::Base
-  acts_in_relation role: :self, action: :follow
-  acts_in_relation role: :source, target: :post, action: :like
+module Resonatable
+  include Resonate
+
+  resonate :user, with: :user, by: :follow
+  resonate :user, with: :post, by: :like
 end
 ```
 
-## Roles
+## Customization
 
-acts_in_relation has three roles: source, target and action.
+If you want to use other foreign key name, you can define it by `:foreign_key` option.
 
-| Role | Outline | (1) | (2) |
-| --- | --- | --- | --- |
-| source | The model that performs the action. | User | User |
-| target | The model that receives the action. | User | Post |
-| action | The action performs between two models. | Follow | Like |
-
-## Generate migration
-
-You can generate migration by generator:
-
-```
-$ rails generate acts_in_relation:action [action] --source=[source] --target=[target]
-```
-
-For example:
-
-```
-$ rails generate acts_in_relation:action like --source=user --target=post
+```ruby
+resonate :user, with: :post, by: :like, foreign_key: :post_id # Default is `:target_post_id`
 ```
 
 ## Contributing
 
-1. Fork it ( https://github.com/kami-zh/acts_in_relation/fork )
+1. Fork it ( https://github.com/kami-zh/resonate/fork )
 2. Create your feature branch (git checkout -b my-new-feature)
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)
