@@ -1,6 +1,6 @@
 require 'verbs'
 
-module Resonate
+module Resonance
   module Supports
     module Converter
       private

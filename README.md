@@ -1,16 +1,16 @@
-# Resonate
+# Resonance
 
-[![Build Status](https://travis-ci.org/kami-zh/resonate.svg)](https://travis-ci.org/kami-zh/resonate)
-[![Gem Version](https://badge.fury.io/rb/resonate.svg)](http://badge.fury.io/rb/resonate)
+[![Build Status](https://travis-ci.org/kami-zh/resonance.svg)](https://travis-ci.org/kami-zh/resonance)
+[![Gem Version](https://badge.fury.io/rb/resonance.svg)](http://badge.fury.io/rb/resonance)
 
-Resonate provides a relational feature to your Rails application, such as follow, like, and so on.
+Resonance provides a relational feature to your Rails application, such as follow, like, and so on.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'resonate'
+gem 'resonance'
 ```
 
 And then execute:
@@ -21,7 +21,7 @@ $ bundle
 
 ## Usage
 
-Resonate supports two way to add relational feature.
+Resonance supports two way to add relational feature.
 
 1. Add a feature to itself
 2. Add features to two models
@@ -49,7 +49,7 @@ Then, define `Resonatable` module to `app/models/concerns/resonatable.rb`:
 
 ```ruby
 module Resonatable
-  include Resonate
+  include Resonance
 
   resonate :user, with: :user, by: :follow
 end
@@ -104,7 +104,7 @@ This case adds like feature to User and Post model.
 
 ```ruby
 module Resonatable
-  include Resonate
+  include Resonance
 
   resonate :user, with: :post, by: :like
 end
@@ -135,7 +135,7 @@ At the same time, some `resonate` methods are able to be defined:
 
 ```ruby
 module Resonatable
-  include Resonate
+  include Resonance
 
   resonate :user, with: :user, by: :follow
   resonate :user, with: :post, by: :like
@@ -152,7 +152,7 @@ resonate :user, with: :post, by: :like, foreign_key: :post_id # Default is `:tar
 
 ## Contributing
 
-1. Fork it ( https://github.com/kami-zh/resonate/fork )
+1. Fork it ( https://github.com/kami-zh/resonance/fork )
 2. Create your feature branch (git checkout -b my-new-feature)
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)

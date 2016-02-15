@@ -2,7 +2,7 @@ $:.unshift File.expand_path('../../../lib', __FILE__)
 
 require 'action_controller/railtie'
 require 'active_record'
-require 'resonate'
+require 'resonance'
 
 module Dummy
   class Application < Rails::Application
@@ -27,7 +27,7 @@ class Follow < ActiveRecord::Base; end
 class Like   < ActiveRecord::Base; end
 
 module Resonatable
-  include Resonate
+  include Resonance
 
   resonate :user, with: :user, by: :follow
   resonate :user, with: :post, by: :like, foreign_key: :post_id

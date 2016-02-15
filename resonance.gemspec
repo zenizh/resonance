@@ -1,16 +1,16 @@
 $:.unshift File.expand_path('../lib', __FILE__)
 
-require 'resonate/version'
+require 'resonance/version'
 
 Gem::Specification.new do |s|
-  s.name        = 'resonate'
-  s.version     = Resonate::VERSION
+  s.name        = 'resonance'
+  s.version     = Resonance::VERSION
   s.authors     = 'kami'
   s.email       = 'hiroki.zenigami@gmail.com'
 
   s.summary     = 'Provides a relational feature to your Rails application.'
   s.description = 'Provides a relational feature to your Rails application.'
-  s.homepage    = 'https://github.com/kami-zh/resonate'
+  s.homepage    = 'https://github.com/kami-zh/resonance'
   s.license     = 'MIT'
 
   s.files = `git ls-files -z`.split("\x0")

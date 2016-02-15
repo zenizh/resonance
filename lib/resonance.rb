@@ -1,7 +1,7 @@
-require 'resonate/errors/argument_error'
-require 'resonate/supports/converter'
+require 'resonance/errors/argument_error'
+require 'resonance/supports/converter'
 
-module Resonate
+module Resonance
   class << self
     def included(base)
       base.extend(ClassMethods)
@@ -9,14 +9,14 @@ module Resonate
   end
 
   module ClassMethods
-    include Resonate::Supports::Converter
+    include Resonance::Supports::Converter
 
     def resonate(subject, with: nil, by: nil, **options)
       @roles = { source: subject, target: with, action: by }
       @options = options
 
       if @roles.values.any?(&:nil?)
-        raise Resonate::Errors::ArgumentError, 'Passed argument is not a valid'
+        raise Resonance::Errors::ArgumentError, 'Passed argument is not a valid'
       end
 
       classify(source).class_eval <<-EOS
