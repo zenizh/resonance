@@ -6,7 +6,7 @@ module Resonance
       private
 
       def classify(str)
-        str.capitalize.constantize
+        str.camelize.constantize
       end
 
       def pluralize(str)
