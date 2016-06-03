@@ -11,12 +11,20 @@ module Resonance
   module ClassMethods
     include Resonance::Supports::Converter
 
-    def resonate(subject, with: nil, by: nil, **options)
-      @roles = { source: subject, target: with, action: by }
-      @options = options
+    def resonate(source, target: nil, action: nil, foreign_key: {})
+      [source, target, action].each do |role|
+        if role.nil?
+          raise Resonance::Errors::ArgumentError, 'Passed argument is not a valid'
+        end
+      end
 
-      if @roles.values.any?(&:nil?)
-        raise Resonance::Errors::ArgumentError, 'Passed argument is not a valid'
+      source = source.to_s
+      target = target.to_s
+      action = action.to_s
+
+      foreign_key.tap do |key|
+        key[:source] = :"#{source}_id"        if key[:source].nil?
+        key[:target] = :"target_#{target}_id" if key[:target].nil?
       end
 
       classify(source).class_eval <<-EOS
@@ -33,7 +41,7 @@ module Resonance
             return
           end
 
-          #{pluralize(action)}.create(#{foreign_key}: target.id)
+          #{pluralize(action)}.create(#{foreign_key[:target]}: target.id)
         end
 
         def un#{action}(target)
@@ -41,17 +49,17 @@ module Resonance
             return
           end
 
-          #{pluralize(action)}.find_by(#{foreign_key}: target.id).destroy
+          #{pluralize(action)}.find_by(#{foreign_key[:target]}: target.id).destroy
         end
 
         def #{progressize(action)}?(target)
-          #{pluralize(action)}.exists?(#{foreign_key}: target.id)
+          #{pluralize(action)}.exists?(#{foreign_key[:target]}: target.id)
         end
       EOS
 
       classify(target).class_eval <<-EOS
         has_many :#{pluralize(action)}_as_target,
-          foreign_key: :#{foreign_key},
+          foreign_key: :#{foreign_key[:target]},
           class_name: '#{classify(action)}',
           dependent: :destroy
 
@@ -60,7 +68,7 @@ module Resonance
           source: :#{source}
 
         def #{pastize(action)}_by?(source)
-          source.#{pluralize(action)}.exists?(#{foreign_key}: id)
+          source.#{pluralize(action)}.exists?(#{foreign_key[:target]}: id)
         end
       EOS
 
@@ -69,26 +77,8 @@ module Resonance
 
         belongs_to :target_#{target},
           class_name: '#{classify(target)}',
-          foreign_key: :#{foreign_key}
+          foreign_key: :#{foreign_key[:target]}
       EOS
-    end
-
-    private
-
-    def source
-      @roles[:source].to_s
-    end
-
-    def target
-      @roles[:target].to_s
-    end
-
-    def action
-      @roles[:action].to_s
-    end
-
-    def foreign_key
-      @options[:foreign_key] || "target_#{target}_id"
     end
   end
 end

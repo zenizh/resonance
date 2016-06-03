@@ -51,7 +51,7 @@ Then, define `Resonatable` module to `app/models/concerns/resonatable.rb`:
 module Resonatable
   include Resonance
 
-  resonate :user, with: :user, by: :follow
+  resonate :user, target: :user, action: :follow
 end
 ```
 
@@ -106,7 +106,7 @@ This case adds like feature to User and Post model.
 module Resonatable
   include Resonance
 
-  resonate :user, with: :post, by: :like
+  resonate :user, target: :post, action: :like
 end
 
 class User < ActiveRecord::Base
@@ -137,8 +137,8 @@ At the same time, some `resonate` methods are able to be defined:
 module Resonatable
   include Resonance
 
-  resonate :user, with: :user, by: :follow
-  resonate :user, with: :post, by: :like
+  resonate :user, target: :user, action: :follow
+  resonate :user, target: :post, action: :like
 end
 ```
 
@@ -147,7 +147,10 @@ end
 If you want to use other foreign key name, you can define it by `:foreign_key` option.
 
 ```ruby
-resonate :user, with: :post, by: :like, foreign_key: :post_id # Default is `:target_post_id`
+resonate :user,
+  target: :post,
+  action: :like,
+  foreign_key: { target: :post_id } # Default key is `:target_post_id`
 ```
 
 ## Contributing

@@ -29,8 +29,8 @@ class Like   < ActiveRecord::Base; end
 module Resonatable
   include Resonance
 
-  resonate :user, with: :user, by: :follow
-  resonate :user, with: :post, by: :like, foreign_key: :post_id
+  resonate :user, target: :user, action: :follow
+  resonate :user, target: :post, action: :like, foreign_key: { target: :post_id }
 end
 
 class User
