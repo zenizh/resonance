@@ -15,8 +15,7 @@ Gem::Specification.new do |s|
 
   s.files = `git ls-files -z`.split("\x0")
 
-  s.add_dependency 'activesupport'
-  s.add_dependency 'verbs'
+  s.add_dependency 'inflexion'
 
   s.add_development_dependency 'rspec-rails'
   s.add_development_dependency 'actionpack'

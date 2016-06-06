@@ -1,84 +1,91 @@
-require 'resonance/errors/argument_error'
-require 'resonance/supports/converter'
+require 'inflexion'
 
 module Resonance
-  class << self
-    def included(base)
-      base.extend(ClassMethods)
-    end
-  end
+  class ArgumentError < StandardError; end
 
   module ClassMethods
-    include Resonance::Supports::Converter
-
     def resonate(source, target: nil, action: nil, foreign_key: {})
-      [source, target, action].each do |role|
+      roles = [source, target, action]
+
+      roles.each do |role|
         if role.nil?
-          raise Resonance::Errors::ArgumentError, 'Passed argument is not a valid'
+          raise Resonance::ArgumentError, 'Passed argument is not a valid'
         end
       end
-
-      source = source.to_s
-      target = target.to_s
-      action = action.to_s
 
       foreign_key.tap do |key|
         key[:source] = :"#{source}_id"        if key[:source].nil?
         key[:target] = :"target_#{target}_id" if key[:target].nil?
       end
 
-      classify(source).class_eval <<-EOS
-        has_many :#{pluralize(action)},
+      Resonance.define(*roles.map(&:to_s), foreign_key)
+    end
+  end
+
+  class << self
+    def included(base)
+      base.extend(ClassMethods)
+    end
+
+    def define(source, target, action, foreign_key)
+      classize(source).class_eval <<-EOS
+        has_many :#{action.pluralize},
           foreign_key: :#{source}_id,
           dependent: :destroy
 
-        has_many :#{progressize(action)},
-          through: :#{pluralize(action)},
+        has_many :#{action.progressize},
+          through: :#{action.pluralize},
           source: :target_#{target}
 
         def #{action}(target)
-          if #{progressize(action)}?(target) || (self == target)
+          if #{action.progressize}?(target) || (self == target)
             return
           end
 
-          #{pluralize(action)}.create(#{foreign_key[:target]}: target.id)
+          #{action.pluralize}.create(#{foreign_key[:target]}: target.id)
         end
 
         def un#{action}(target)
-          unless #{progressize(action)}?(target)
+          unless #{action.progressize}?(target)
             return
           end
 
-          #{pluralize(action)}.find_by(#{foreign_key[:target]}: target.id).destroy
+          #{action.pluralize}.find_by(#{foreign_key[:target]}: target.id).destroy
         end
 
-        def #{progressize(action)}?(target)
-          #{pluralize(action)}.exists?(#{foreign_key[:target]}: target.id)
+        def #{action.progressize}?(target)
+          #{action.pluralize}.exists?(#{foreign_key[:target]}: target.id)
         end
       EOS
 
-      classify(target).class_eval <<-EOS
-        has_many :#{pluralize(action)}_as_target,
+      classize(target).class_eval <<-EOS
+        has_many :#{action.pluralize}_as_target,
           foreign_key: :#{foreign_key[:target]},
-          class_name: '#{classify(action)}',
+          class_name: '#{classize(action)}',
           dependent: :destroy
 
-        has_many :#{peoplize(action)},
-          through: :#{pluralize(action)}_as_target,
+        has_many :#{action.peopleize},
+          through: :#{action.pluralize}_as_target,
           source: :#{source}
 
-        def #{pastize(action)}_by?(source)
-          source.#{pluralize(action)}.exists?(#{foreign_key[:target]}: id)
+        def #{action.pastize}_by?(source)
+          source.#{action.pluralize}.exists?(#{foreign_key[:target]}: id)
         end
       EOS
 
-      classify(action).class_eval <<-EOS
+      classize(action).class_eval <<-EOS
         belongs_to :#{source}
 
         belongs_to :target_#{target},
-          class_name: '#{classify(target)}',
+          class_name: '#{classize(target)}',
           foreign_key: :#{foreign_key[:target]}
       EOS
+    end
+
+    private
+
+    def classize(str)
+      str.camelize.constantize
     end
   end
 end
